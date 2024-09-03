@@ -1,0 +1,63 @@
+#include <Arduino.h>
+#include <LiquidCrystal.h>
+
+#define RS 2
+#define EN 4
+#define D0 13
+#define D1 12
+#define D2 14
+#define D3 27
+#define D4 26
+#define D5 25
+#define D6 33
+#define D7 32
+
+#define pot1 36
+#define pot2 39
+
+LiquidCrystal LCD(RS,EN,D0,D1,D2,D3,D4,D5,D6,D7);
+
+struct Botones {
+  const uint8_t PIN;
+  volatile uint8_t numberKeyPresses;
+  volatile bool  pressed;
+};
+
+Botones boton1 = {21, 0, false};
+Botones boton2 = {19, 0, false};
+
+
+uint8_t decenas, unidades, decimas;
+float voltaje;
+
+void IRAM_ATTR BTN1_ISR() {
+  boton1.numberKeyPresses++;
+  boton1.pressed = true;
+}
+
+void IRAM_ATTR BTN2_ISR() {
+  boton2.numberKeyPresses++;
+  boton2.pressed = true;
+}
+
+void setup() {
+
+  pinMode(pot1, INPUT);
+  pinMode(pot2, INPUT);
+
+  pinMode(boton1.PIN, INPUT_PULLUP);
+  attachInterrupt(boton1.PIN, BTN1_ISR, FALLING);
+  pinMode(boton2.PIN, INPUT_PULLUP);
+  attachInterrupt(boton2.PIN, BTN2_ISR, FALLING);
+
+  Serial.begin(115200);
+  
+  LCD.begin(16,2);
+  LCD.clear();
+  LCD.print("Cargando...");
+
+}
+
+void loop() {
+
+}
