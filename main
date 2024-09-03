@@ -27,8 +27,17 @@ Botones boton1 = {21, 0, false};
 Botones boton2 = {19, 0, false};
 
 
-uint8_t decenas, unidades, decimas;
-float voltaje;
+struct Voltajes {
+  uint8_t decenas, unidades, decimas;
+};
+
+Voltajes voltaje1 = {0, 0, 0};
+Voltajes voltaje2 = {0, 0, 0};
+
+int contador;
+float lecturaPot1;
+float lecturaPot2;
+
 
 void IRAM_ATTR BTN1_ISR() {
   boton1.numberKeyPresses++;
@@ -59,5 +68,23 @@ void setup() {
 }
 
 void loop() {
+  lecturaPot1 = analogReadMilliVolts(pot1) / 10;
+  lecturaPot2 = analogReadMilliVolts(pot2) / 10;
+  int temp1 = lecturaPot1;
+  int temp2 = lecturaPot2;
 
-}
+  voltaje1.decenas = temp1 / 100;
+  temp1 = temp1 - voltaje1.decenas * 100;
+  voltaje1.unidades = temp1 / 10;
+  temp1 = temp1 - voltaje1.unidades * 10;
+  voltaje1.decimas = temp1;
+
+  voltaje2.decenas = temp2 / 100;
+  temp2 = temp2 - voltaje2.decenas * 100;
+  voltaje2.unidades = temp2 / 10;
+  temp2 = temp2 - voltaje2.unidades * 10;
+  voltaje2.decimas = temp2;
+
+  LCD.clear();
+  LCD.print("Voltaje 1");
+  }
