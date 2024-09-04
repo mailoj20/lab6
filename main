@@ -28,7 +28,7 @@ Botones boton2 = {19, 0, false};
 
 
 struct Voltajes {
-  uint8_t decenas, unidades, decimas;
+  uint8_t unidades, decimas, centesimas;
 };
 
 Voltajes voltaje1 = {0, 0, 0};
@@ -68,23 +68,27 @@ void setup() {
 }
 
 void loop() {
+
   lecturaPot1 = analogReadMilliVolts(pot1) / 10;
   lecturaPot2 = analogReadMilliVolts(pot2) / 10;
   int temp1 = lecturaPot1;
   int temp2 = lecturaPot2;
 
-  voltaje1.decenas = temp1 / 100;
-  temp1 = temp1 - voltaje1.decenas * 100;
-  voltaje1.unidades = temp1 / 10;
-  temp1 = temp1 - voltaje1.unidades * 10;
-  voltaje1.decimas = temp1;
+  voltaje1.unidades = temp1 / 100;
+  temp1 = temp1 - voltaje1.unidades * 100;
+  voltaje1.decimas = temp1 / 10;
+  temp1 = temp1 - voltaje1.decimas * 10;
+  voltaje1.centesimas = temp1;
 
-  voltaje2.decenas = temp2 / 100;
-  temp2 = temp2 - voltaje2.decenas * 100;
-  voltaje2.unidades = temp2 / 10;
-  temp2 = temp2 - voltaje2.unidades * 10;
-  voltaje2.decimas = temp2;
+  voltaje2.unidades = temp2 / 100;
+  temp2 = temp2 - voltaje2.unidades * 100;
+  voltaje2.decimas = temp2 / 10;
+  temp2 = temp2 - voltaje2.decimas * 10;
+  voltaje2.centesimas = temp2;
 
   LCD.clear();
-  LCD.print("Voltaje 1");
+  LCD.print("Volt1 Volt2 Cont");
+  LCD.setCursor(2, 1);
+  LCD.print(voltaje1.unidades);
+
   }
