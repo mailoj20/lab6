@@ -1,10 +1,10 @@
 #include <Arduino.h>
 #include <LiquidCrystal.h>
 
-#define RS 2
-#define EN 4
+#define RS 4
+#define EN 16
 #define D0 13
-#define D1 12
+#define D1 17
 #define D2 14
 #define D3 27
 #define D4 26
@@ -12,19 +12,18 @@
 #define D6 33
 #define D7 32
 
-#define pot1 36
-#define pot2 39
+#define pot1 39
+#define pot2 36
 
 LiquidCrystal LCD(RS,EN,D0,D1,D2,D3,D4,D5,D6,D7);
 
 struct Botones {
   const uint8_t PIN;
-  volatile uint8_t numberKeyPresses;
   volatile bool  pressed;
 };
 
-Botones boton1 = {21, 0, false};
-Botones boton2 = {19, 0, false};
+Botones boton1 = {21, false};
+Botones boton2 = {19, false};
 
 
 struct Voltajes {
@@ -34,18 +33,19 @@ struct Voltajes {
 Voltajes voltaje1 = {0, 0, 0};
 Voltajes voltaje2 = {0, 0, 0};
 
-int contador;
+uint8_t contador = 0;
 float lecturaPot1;
 float lecturaPot2;
 
+unsigned long lastDebounceTime = 0;
+unsigned long debounceDelay = 50;
+
 
 void IRAM_ATTR BTN1_ISR() {
-  boton1.numberKeyPresses++;
   boton1.pressed = true;
 }
 
 void IRAM_ATTR BTN2_ISR() {
-  boton2.numberKeyPresses++;
   boton2.pressed = true;
 }
 
@@ -69,6 +69,18 @@ void setup() {
 
 void loop() {
 
+  if (boton1.pressed) {
+    contador++;
+    boton1.pressed = false;
+  }
+
+  if (boton2.pressed) {
+    if (contador != 0) {
+      contador--;
+      boton2.pressed = false;
+    }
+  }
+
   lecturaPot1 = analogReadMilliVolts(pot1) / 10;
   lecturaPot2 = analogReadMilliVolts(pot2) / 10;
   int temp1 = lecturaPot1;
@@ -87,8 +99,21 @@ void loop() {
   voltaje2.centesimas = temp2;
 
   LCD.clear();
+
   LCD.print("Volt1 Volt2 Cont");
-  LCD.setCursor(2, 1);
+  LCD.setCursor(0, 1);
   LCD.print(voltaje1.unidades);
+  LCD.print(".");
+  LCD.print(voltaje1.decimas);
+  LCD.print(voltaje1.centesimas);
+  LCD.setCursor(6, 1);
+  LCD.print(voltaje2.unidades);
+  LCD.print(".");
+  LCD.print(voltaje2.decimas);
+  LCD.print(voltaje2.centesimas);
+  LCD.setCursor(12, 1);
+  LCD.print(contador);
+  
+  delay(100);
 
   }
